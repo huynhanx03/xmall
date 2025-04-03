@@ -1,5 +1,7 @@
-CREATE DATABASE xmall_user_db;
-USE xmall_user_db;
+CREATE
+DATABASE xmall_user_db;
+USE
+xmall_user_db;
 
 CREATE TABLE user_base
 (
@@ -27,7 +29,7 @@ CREATE TABLE user_info
     user_state             TINYINT UNSIGNED NOT NULL COMMENT 'User state: 0-Locked, 1-Activated, 2-Not Activated',
     user_mobile            VARCHAR(20)  DEFAULT NULL COMMENT 'Mobile phone number',
     user_gender            TINYINT UNSIGNED DEFAULT 0 COMMENT 'User gender: 0-Secret, 1-Male, 2-Female',
-    user_birthday          DATE         DEFAULT NULL COMMENT 'User birthday',
+    user_birthday          TIMESTAMP    DEFAULT NULL COMMENT 'User birthday',
     user_email             VARCHAR(255) DEFAULT NULL COMMENT 'User email',
     user_is_authentication TINYINT UNSIGNED NOT NULL COMMENT 'Authentication status: 0-Not Authenticated, 1-Authenticated',
     user_city              VARCHAR(100) COMMENT 'User’s city of residence',
@@ -79,7 +81,7 @@ CREATE TABLE user_verify
 CREATE TABLE user_two_factor
 (
     two_factor_id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT 'Two-factor ID',
-    user_id                BIGINT UNSIGNED NOT NULL COMMENT 'User ID', -- Khóa ngoại liên kết tới user_base
+    user_id                BIGINT UNSIGNED NOT NULL COMMENT 'User ID',
     two_factor_auth_type   ENUM('SMS', 'EMAIL', 'APP') NOT NULL COMMENT 'Type of 2FA: SMS, Email, App',
     two_factor_auth_secret VARCHAR(255) NOT NULL COMMENT 'Secret for 2FA (e.g., TOTP key)',
     two_factor_phone       VARCHAR(20)  DEFAULT NULL COMMENT 'Phone number for SMS 2FA',

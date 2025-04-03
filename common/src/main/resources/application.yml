@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: common-module
+  config:
+    import: configserver:http://localhost:9999
+  cloud:
+    config:
+      fail-fast: true
+
