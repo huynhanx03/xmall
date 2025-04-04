@@ -3,6 +3,8 @@ package com.xmall.product.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "SPU")
+@Table(name = "spu")
 public class SPUEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,9 +35,11 @@ public class SPUEntity implements Serializable {
     @Column(columnDefinition = "TEXT")
     String description;
 
+    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(nullable = false)
     LocalDateTime updatedAt;
 }

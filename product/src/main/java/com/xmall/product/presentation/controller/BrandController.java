@@ -34,7 +34,7 @@ public class BrandController {
     }
 
     @PostMapping
-    ApiResponse<BrandResponse> createBrand(@RequestBody BrandRequest request) {
+    ApiResponse<BrandResponse> createBrand(@RequestBody @Valid BrandRequest request) {
         return ApiResponse.<BrandResponse>builder()
                 .data(brandService.createBrand(request))
                 .build();

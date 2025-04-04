@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "SKU_Regular_Attribute_Value")
+@Table(name = "sku_regular_attribute_value")
 public class SKURegularAttributeValueEntity implements Serializable {
     @EmbeddedId
     SKUAttributeKey id;

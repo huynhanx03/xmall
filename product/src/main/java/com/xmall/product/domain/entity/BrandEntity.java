@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "`Brand`")
+@Table(name = "brand")
 public class BrandEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

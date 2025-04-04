@@ -3,6 +3,8 @@ package com.xmall.product.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -13,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "Category")
+@Table(name = "category")
 public class CategoryEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,9 +24,11 @@ public class CategoryEntity implements Serializable {
     @Column(nullable = false, length = 100)
     String name;
 
+    @CreationTimestamp
     @Column(nullable = false, updatable = false)
     LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(nullable = false)
     LocalDateTime updatedAt;
 }
