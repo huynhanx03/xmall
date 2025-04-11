@@ -171,8 +171,7 @@ INSERT INTO sku_sales_attribute_value (sku_id, attribute_id, value)
 VALUES (1, 1, '256GB'), -- capacity
        (1, 2, 'Gold'),  -- color
        (2, 1, '512GB'), -- capacity
-       (2, 2, 'Gold');
--- color
+       (2, 2, 'Gold');  -- color
 
 -- Insert sku Regular Attribute Values
 INSERT INTO sku_regular_attribute_value (sku_id, attribute_id, value)

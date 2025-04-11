@@ -1,14 +1,14 @@
 package com.xmall.product.presentation.controller;
 
-import com.xmall.product.application.dto.request.SKUImageRequest;
+import com.xmall.common.application.dto.response.ApiResponse;
+import com.xmall.product.application.dto.request.SKUImageCreateRequest;
+import com.xmall.product.application.dto.request.SKUImageUpdateRequest;
 import com.xmall.product.application.dto.response.SKUImageResponse;
 import com.xmall.product.domain.service.ISKUImageService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,33 +21,43 @@ public class SKUImageController {
     ISKUImageService skuImageService;
 
     @GetMapping
-    public ResponseEntity<List<SKUImageResponse>> getSKUImages() {
-        return ResponseEntity.ok(skuImageService.getSKUImages());
+    ApiResponse<List<SKUImageResponse>> getSKUImages() {
+        return ApiResponse.<List<SKUImageResponse>>builder()
+                .data(skuImageService.getSKUImages())
+                .build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SKUImageResponse> getSKUImageById(@PathVariable Long id) {
-        return ResponseEntity.ok(skuImageService.getSKUImageById(id));
+    ApiResponse<SKUImageResponse> getSKUImage(@PathVariable("id") Long id) {
+        return ApiResponse.<SKUImageResponse>builder()
+                .data(skuImageService.getSKUImageById(id))
+                .build();
     }
 
     @PostMapping
-    public ResponseEntity<SKUImageResponse> createSKUImage(@Valid @RequestBody SKUImageRequest skuImageRequest) {
-        return new ResponseEntity<>(skuImageService.createSKUImage(skuImageRequest), HttpStatus.CREATED);
+    ApiResponse<SKUImageResponse> createSKUImage(@RequestBody @Valid SKUImageCreateRequest request) {
+        return ApiResponse.<SKUImageResponse>builder()
+                .data(skuImageService.createSKUImage(request))
+                .build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SKUImageResponse> updateSKUImage(@PathVariable Long id, @Valid @RequestBody SKUImageRequest skuImageRequest) {
-        return ResponseEntity.ok(skuImageService.updateSKUImage(id, skuImageRequest));
+    ApiResponse<SKUImageResponse> updateSKUImage(@PathVariable Long id, @Valid @RequestBody SKUImageUpdateRequest request) {
+        return ApiResponse.<SKUImageResponse>builder()
+                .data(skuImageService.updateSKUImage(id, request))
+                .build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSKUImage(@PathVariable Long id) {
+    ApiResponse<Void> deleteSKUImage(@PathVariable Long id) {
         skuImageService.deleteSKUImage(id);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.<Void>builder().build();
     }
 
     @GetMapping("/sku/{skuId}")
-    public ResponseEntity<List<SKUImageResponse>> getSKUImagesBySKU(@PathVariable Long skuId) {
-        return ResponseEntity.ok(skuImageService.getSKUImagesBySKU(skuId));
+    ApiResponse<List<SKUImageResponse>> getSKUImagesBySKU(@PathVariable Long skuId) {
+        return ApiResponse.<List<SKUImageResponse>>builder()
+                .data(skuImageService.getSKUImagesBySKU(skuId))
+                .build();
     }
 } 

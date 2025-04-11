@@ -1,6 +1,7 @@
 package com.xmall.product.application.mapper;
 
-import com.xmall.product.application.dto.request.SKURegularAttributeValueRequest;
+import com.xmall.product.application.dto.request.SKURegularAttributeValueCreateRequest;
+import com.xmall.product.application.dto.request.SKURegularAttributeValueUpdateRequest;
 import com.xmall.product.application.dto.response.SKURegularAttributeValueResponse;
 import com.xmall.product.domain.entity.SKURegularAttributeValueEntity;
 import com.xmall.product.domain.entity.key.SKUAttributeKey;
@@ -12,7 +13,7 @@ import org.mapstruct.MappingTarget;
 public interface SKURegularAttributeValueMapper {
     @Mapping(target = "id.skuId", source = "skuId")
     @Mapping(target = "id.attributeId", source = "attributeId")
-    SKURegularAttributeValueEntity toSKURegularAttributeValueEntity(SKURegularAttributeValueRequest request);
+    SKURegularAttributeValueEntity toSKURegularAttributeValueEntity(SKURegularAttributeValueCreateRequest request);
 
     @Mapping(target = "skuId", source = "sku.skuId")
     @Mapping(target = "skuName", source = "sku.name")
@@ -22,5 +23,5 @@ public interface SKURegularAttributeValueMapper {
 
     @Mapping(target = "id.skuId", source = "skuId")
     @Mapping(target = "id.attributeId", source = "attributeId")
-    void updateSKURegularAttributeValueEntity(@MappingTarget SKURegularAttributeValueEntity entity, SKURegularAttributeValueRequest request);
+    void updateSKURegularAttributeValueEntity(@MappingTarget SKURegularAttributeValueEntity entity, SKURegularAttributeValueUpdateRequest request);
 } 

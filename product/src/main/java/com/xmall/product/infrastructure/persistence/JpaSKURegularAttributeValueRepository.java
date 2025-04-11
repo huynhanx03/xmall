@@ -11,5 +11,6 @@ import java.util.List;
 public interface JpaSKURegularAttributeValueRepository extends JpaRepository<SKURegularAttributeValueEntity, SKUAttributeKey> {
     List<SKURegularAttributeValueEntity> findBySkuSkuId(Long skuId);
     List<SKURegularAttributeValueEntity> findByAttributeAttributeId(Long attributeId);
-    boolean existsBySkuSkuIdAndAttributeAttributeId(Long skuId, Long attributeId);
-} 
+
+    boolean existsByIdSkuIdAndIdAttributeId(Long idSkuId, Long idAttributeId);
+}

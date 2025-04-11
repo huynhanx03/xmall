@@ -2,7 +2,8 @@ package com.xmall.product.domain.service.impl;
 
 import com.xmall.common.shared.exception.AppException;
 import com.xmall.common.shared.exception.ErrorCode;
-import com.xmall.product.application.dto.request.BrandRequest;
+import com.xmall.product.application.dto.request.BrandCreateRequest;
+import com.xmall.product.application.dto.request.BrandUpdateRequest;
 import com.xmall.product.application.dto.response.BrandResponse;
 import com.xmall.product.application.mapper.BrandMapper;
 import com.xmall.product.domain.entity.BrandEntity;
@@ -41,14 +42,14 @@ public class BrandService implements IBrandService {
     }
 
     @Override
-    public BrandResponse createBrand(BrandRequest brandRequest) {
-        if (brandRepository.existsByName(brandRequest.getName())) {
+    public BrandResponse createBrand(BrandCreateRequest request) {
+        if (brandRepository.existsByName(request.getName())) {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
-            errorCode.setMessage("Brand with name '" + brandRequest.getName() + "' already exists.");
+            errorCode.setMessage("Brand with name '" + request.getName() + "' already exists.");
             throw new AppException(errorCode);
         }
 
-        BrandEntity brandEntity = brandMapper.toBrandEntity(brandRequest);
+        BrandEntity brandEntity = brandMapper.toBrandEntity(request);
 
         try {
             brandEntity = brandRepository.save(brandEntity);
@@ -62,24 +63,24 @@ public class BrandService implements IBrandService {
     }
 
     @Override
-    public BrandResponse updateBrand(Long id, BrandRequest brandRequest) {
+    public BrandResponse updateBrand(Long id, BrandUpdateRequest request) {
         BrandEntity brandEntity = brandRepository.findById(id).orElseThrow(() -> {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
             errorCode.setMessage("Brand not found.");
             return new AppException(errorCode);
         });
 
-        if (brandEntity.getName().equals(brandRequest.getName())) {
+        if (brandEntity.getName().equals(request.getName())) {
             return brandMapper.toBrandResponse(brandRepository.save(brandEntity));
         }
 
-        if (brandRepository.existsByName(brandRequest.getName())) {
+        if (brandRepository.existsByName(request.getName())) {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
-            errorCode.setMessage("Brand with name '" + brandRequest.getName() + "' already exists.");
+            errorCode.setMessage("Brand with name '" + request.getName() + "' already exists.");
             throw new AppException(errorCode);
         }
 
-        brandMapper.updateBrandEntity(brandEntity, brandRequest);
+        brandMapper.updateBrandEntity(brandEntity, request);
 
         try {
             brandEntity = brandRepository.save(brandEntity);

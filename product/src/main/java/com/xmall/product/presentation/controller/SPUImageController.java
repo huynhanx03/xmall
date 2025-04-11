@@ -1,14 +1,14 @@
 package com.xmall.product.presentation.controller;
 
-import com.xmall.product.application.dto.request.SPUImageRequest;
+import com.xmall.common.application.dto.response.ApiResponse;
+import com.xmall.product.application.dto.request.SPUImageCreateRequest;
+import com.xmall.product.application.dto.request.SPUImageUpdateRequest;
 import com.xmall.product.application.dto.response.SPUImageResponse;
 import com.xmall.product.domain.service.ISPUImageService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,33 +21,43 @@ public class SPUImageController {
     ISPUImageService spuImageService;
 
     @GetMapping
-    public ResponseEntity<List<SPUImageResponse>> getSPUImages() {
-        return ResponseEntity.ok(spuImageService.getSPUImages());
+    ApiResponse<List<SPUImageResponse>> getSPUImages() {
+        return ApiResponse.<List<SPUImageResponse>>builder()
+                .data(spuImageService.getSPUImages())
+                .build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<SPUImageResponse> getSPUImageById(@PathVariable Long id) {
-        return ResponseEntity.ok(spuImageService.getSPUImageById(id));
+    ApiResponse<SPUImageResponse> getSPUImage(@PathVariable("id") Long id) {
+        return ApiResponse.<SPUImageResponse>builder()
+                .data(spuImageService.getSPUImageById(id))
+                .build();
     }
 
     @PostMapping
-    public ResponseEntity<SPUImageResponse> createSPUImage(@Valid @RequestBody SPUImageRequest spuImageRequest) {
-        return new ResponseEntity<>(spuImageService.createSPUImage(spuImageRequest), HttpStatus.CREATED);
+    ApiResponse<SPUImageResponse> createSPUImage(@RequestBody @Valid SPUImageCreateRequest request) {
+        return ApiResponse.<SPUImageResponse>builder()
+                .data(spuImageService.createSPUImage(request))
+                .build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<SPUImageResponse> updateSPUImage(@PathVariable Long id, @Valid @RequestBody SPUImageRequest spuImageRequest) {
-        return ResponseEntity.ok(spuImageService.updateSPUImage(id, spuImageRequest));
+    ApiResponse<SPUImageResponse> updateSPUImage(@PathVariable Long id, @Valid @RequestBody SPUImageUpdateRequest request) {
+        return ApiResponse.<SPUImageResponse>builder()
+                .data(spuImageService.updateSPUImage(id, request))
+                .build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSPUImage(@PathVariable Long id) {
+    ApiResponse<Void> deleteSPUImage(@PathVariable Long id) {
         spuImageService.deleteSPUImage(id);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.<Void>builder().build();
     }
 
     @GetMapping("/spu/{spuId}")
-    public ResponseEntity<List<SPUImageResponse>> getSPUImagesBySPU(@PathVariable Long spuId) {
-        return ResponseEntity.ok(spuImageService.getSPUImagesBySPU(spuId));
+    ApiResponse<List<SPUImageResponse>> getSPUImagesBySPU(@PathVariable Long spuId) {
+        return ApiResponse.<List<SPUImageResponse>>builder()
+                .data(spuImageService.getSPUImagesBySPU(spuId))
+                .build();
     }
 } 

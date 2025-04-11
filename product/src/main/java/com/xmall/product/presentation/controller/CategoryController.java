@@ -1,9 +1,10 @@
 package com.xmall.product.presentation.controller;
 
 import com.xmall.common.application.dto.response.ApiResponse;
-import com.xmall.product.application.dto.request.CategoryRequest;
+import com.xmall.product.application.dto.request.CategoryCreateRequest;
+import com.xmall.product.application.dto.request.CategoryUpdateRequest;
 import com.xmall.product.application.dto.response.CategoryResponse;
-import com.xmall.product.domain.service.impl.CategoryService;
+import com.xmall.product.domain.service.ICategoryService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequestMapping("/categories")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CategoryController {
-    CategoryService categoryService;
+    ICategoryService categoryService;
 
     @GetMapping
     ApiResponse<List<CategoryResponse>> getCategories() {
@@ -34,14 +35,14 @@ public class CategoryController {
     }
 
     @PostMapping
-    ApiResponse<CategoryResponse> createCategory(@RequestBody @Valid CategoryRequest request) {
+    ApiResponse<CategoryResponse> createCategory(@RequestBody @Valid CategoryCreateRequest request) {
         return ApiResponse.<CategoryResponse>builder()
                 .data(categoryService.createCategory(request))
                 .build();
     }
 
     @PutMapping("/{id}")
-    ApiResponse<CategoryResponse> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryRequest request) {
+    ApiResponse<CategoryResponse> updateCategory(@PathVariable Long id, @Valid @RequestBody CategoryUpdateRequest request) {
         return ApiResponse.<CategoryResponse>builder()
                 .data(categoryService.updateCategory(id, request))
                 .build();

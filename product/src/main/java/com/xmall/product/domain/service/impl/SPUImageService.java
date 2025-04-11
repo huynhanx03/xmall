@@ -2,7 +2,8 @@ package com.xmall.product.domain.service.impl;
 
 import com.xmall.common.shared.exception.AppException;
 import com.xmall.common.shared.exception.ErrorCode;
-import com.xmall.product.application.dto.request.SPUImageRequest;
+import com.xmall.product.application.dto.request.SPUImageCreateRequest;
+import com.xmall.product.application.dto.request.SPUImageUpdateRequest;
 import com.xmall.product.application.dto.response.SPUImageResponse;
 import com.xmall.product.application.mapper.SPUImageMapper;
 import com.xmall.product.domain.entity.SPUEntity;
@@ -14,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,15 +45,16 @@ public class SPUImageService implements ISPUImageService {
     }
 
     @Override
-    public SPUImageResponse createSPUImage(SPUImageRequest spuImageRequest) {
-        SPUEntity spu = spuRepository.findById(spuImageRequest.getSpuId())
+    @Transactional
+    public SPUImageResponse createSPUImage(SPUImageCreateRequest request) {
+        SPUEntity spu = spuRepository.findById(request.getSpuId())
                 .orElseThrow(() -> {
                     ErrorCode errorCode = ErrorCode.NOT_EXISTED;
                     errorCode.setMessage("SPU not found.");
                     return new AppException(errorCode);
                 });
 
-        SPUImageEntity spuImageEntity = spuImageMapper.toSPUImageEntity(spuImageRequest);
+        SPUImageEntity spuImageEntity = spuImageMapper.toSPUImageEntity(request);
         spuImageEntity.setSpu(spu);
 
         try {
@@ -66,21 +69,26 @@ public class SPUImageService implements ISPUImageService {
     }
 
     @Override
-    public SPUImageResponse updateSPUImage(Long id, SPUImageRequest spuImageRequest) {
+    @Transactional
+    public SPUImageResponse updateSPUImage(Long id, SPUImageUpdateRequest request) {
         SPUImageEntity spuImageEntity = spuImageRepository.findById(id).orElseThrow(() -> {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
             errorCode.setMessage("SPU image not found.");
             return new AppException(errorCode);
         });
 
-        SPUEntity spu = spuRepository.findById(spuImageRequest.getSpuId())
+        if (spuImageEntity.getImageUrl().equals(request.getImageUrl())) {
+            return spuImageMapper.toSPUImageResponse(spuImageRepository.save(spuImageEntity));
+        }
+
+        SPUEntity spu = spuRepository.findById(request.getSpuId())
                 .orElseThrow(() -> {
                     ErrorCode errorCode = ErrorCode.NOT_EXISTED;
                     errorCode.setMessage("SPU not found.");
                     return new AppException(errorCode);
                 });
 
-        spuImageMapper.updateSPUImageEntity(spuImageEntity, spuImageRequest);
+        spuImageEntity.setImageUrl(request.getImageUrl());
         spuImageEntity.setSpu(spu);
 
         try {

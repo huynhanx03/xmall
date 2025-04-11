@@ -2,7 +2,8 @@ package com.xmall.product.domain.service.impl;
 
 import com.xmall.common.shared.exception.AppException;
 import com.xmall.common.shared.exception.ErrorCode;
-import com.xmall.product.application.dto.request.CategoryRequest;
+import com.xmall.product.application.dto.request.CategoryCreateRequest;
+import com.xmall.product.application.dto.request.CategoryUpdateRequest;
 import com.xmall.product.application.dto.response.CategoryResponse;
 import com.xmall.product.application.mapper.CategoryMapper;
 import com.xmall.product.domain.entity.CategoryEntity;
@@ -40,14 +41,14 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public CategoryResponse createCategory(CategoryRequest categoryRequest) {
-        if (categoryRepository.existsByName(categoryRequest.getName())) {
+    public CategoryResponse createCategory(CategoryCreateRequest request) {
+        if (categoryRepository.existsByName(request.getName())) {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
-            errorCode.setMessage("Category with name '" + categoryRequest.getName() + "' already exists.");
+            errorCode.setMessage("Category with name '" + request.getName() + "' already exists.");
             throw new AppException(errorCode);
         }
 
-        CategoryEntity categoryEntity = categoryMapper.toCategoryEntity(categoryRequest);
+        CategoryEntity categoryEntity = categoryMapper.toCategoryEntity(request);
 
         try {
             categoryEntity = categoryRepository.save(categoryEntity);
@@ -61,24 +62,24 @@ public class CategoryService implements ICategoryService {
     }
 
     @Override
-    public CategoryResponse updateCategory(Long id, CategoryRequest categoryRequest) {
+    public CategoryResponse updateCategory(Long id, CategoryUpdateRequest categoryUpdateRequest) {
         CategoryEntity categoryEntity = categoryRepository.findById(id).orElseThrow(() -> {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
             errorCode.setMessage("Category not found.");
             return new AppException(errorCode);
         });
 
-        if (categoryEntity.getName().equals(categoryRequest.getName())) {
+        if (categoryEntity.getName().equals(categoryUpdateRequest.getName())) {
             return categoryMapper.toCategoryResponse(categoryRepository.save(categoryEntity));
         }
 
-        if (categoryRepository.existsByName(categoryRequest.getName())) {
+        if (categoryRepository.existsByName(categoryUpdateRequest.getName())) {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
-            errorCode.setMessage("Category with name '" + categoryRequest.getName() + "' already exists.");
+            errorCode.setMessage("Category with name '" + categoryUpdateRequest.getName() + "' already exists.");
             throw new AppException(errorCode);
         }
 
-        categoryMapper.updateCategoryEntity(categoryEntity, categoryRequest);
+        categoryMapper.updateCategoryEntity(categoryEntity, categoryUpdateRequest);
 
         try {
             categoryEntity = categoryRepository.save(categoryEntity);

@@ -2,7 +2,8 @@ package com.xmall.product.domain.service.impl;
 
 import com.xmall.common.shared.exception.AppException;
 import com.xmall.common.shared.exception.ErrorCode;
-import com.xmall.product.application.dto.request.SKURequest;
+import com.xmall.product.application.dto.request.SKUCreateRequest;
+import com.xmall.product.application.dto.request.SKUUpdateRequest;
 import com.xmall.product.application.dto.response.SKUResponse;
 import com.xmall.product.application.mapper.SKUMapper;
 import com.xmall.product.domain.entity.SKUEntity;
@@ -14,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,21 +45,22 @@ public class SKUService implements ISKUService {
     }
 
     @Override
-    public SKUResponse createSKU(SKURequest skuRequest) {
-        if (skuRepository.existsByName(skuRequest.getName())) {
+    @Transactional
+    public SKUResponse createSKU(SKUCreateRequest request) {
+        if (skuRepository.existsByName(request.getName())) {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
-            errorCode.setMessage("SKU with name '" + skuRequest.getName() + "' already exists.");
+            errorCode.setMessage("SKU with name '" + request.getName() + "' already exists.");
             throw new AppException(errorCode);
         }
 
-        SPUEntity spu = spuRepository.findById(skuRequest.getSpuId())
+        SPUEntity spu = spuRepository.findById(request.getSpuId())
                 .orElseThrow(() -> {
                     ErrorCode errorCode = ErrorCode.NOT_EXISTED;
                     errorCode.setMessage("SPU not found.");
                     return new AppException(errorCode);
                 });
 
-        SKUEntity skuEntity = skuMapper.toSKUEntity(skuRequest);
+        SKUEntity skuEntity = skuMapper.toSKUEntity(request);
         skuEntity.setSpu(spu);
 
         try {
@@ -72,27 +75,28 @@ public class SKUService implements ISKUService {
     }
 
     @Override
-    public SKUResponse updateSKU(Long id, SKURequest skuRequest) {
+    @Transactional
+    public SKUResponse updateSKU(Long id, SKUUpdateRequest request) {
         SKUEntity skuEntity = skuRepository.findById(id).orElseThrow(() -> {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
             errorCode.setMessage("SKU not found.");
             return new AppException(errorCode);
         });
 
-        if (!skuEntity.getName().equals(skuRequest.getName()) && skuRepository.existsByName(skuRequest.getName())) {
+        if (!skuEntity.getName().equals(request.getName()) && skuRepository.existsByName(request.getName())) {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
-            errorCode.setMessage("SKU with name '" + skuRequest.getName() + "' already exists.");
+            errorCode.setMessage("SKU with name '" + request.getName() + "' already exists.");
             throw new AppException(errorCode);
         }
 
-        SPUEntity spu = spuRepository.findById(skuRequest.getSpuId())
+        SPUEntity spu = spuRepository.findById(request.getSpuId())
                 .orElseThrow(() -> {
                     ErrorCode errorCode = ErrorCode.NOT_EXISTED;
                     errorCode.setMessage("SPU not found.");
                     return new AppException(errorCode);
                 });
 
-        skuMapper.updateSKUEntity(skuEntity, skuRequest);
+        skuMapper.updateSKUEntity(skuEntity, request);
         skuEntity.setSpu(spu);
 
         try {
@@ -107,6 +111,7 @@ public class SKUService implements ISKUService {
     }
 
     @Override
+    @Transactional
     public void deleteSKU(Long id) {
         if (!skuRepository.existsById(id)) {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;

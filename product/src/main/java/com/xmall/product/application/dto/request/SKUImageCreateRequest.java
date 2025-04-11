@@ -13,7 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SKUImageRequest implements Serializable {
+public class SKUImageCreateRequest implements Serializable {
     @NotNull(message = "SKU ID is required")
     Long skuId;
 

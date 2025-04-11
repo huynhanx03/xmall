@@ -12,7 +12,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SKURegularAttributeValueRequest implements Serializable {
+public class SKUSalesAttributeValueCreateRequest implements Serializable {
     @NotNull(message = "SKU ID is required")
     Long skuId;
 

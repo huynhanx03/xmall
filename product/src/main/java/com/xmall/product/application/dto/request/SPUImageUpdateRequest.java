@@ -13,7 +13,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SPUImageRequest implements Serializable {
+public class SPUImageUpdateRequest implements Serializable {
     @NotNull(message = "SPU ID is required")
     Long spuId;
 

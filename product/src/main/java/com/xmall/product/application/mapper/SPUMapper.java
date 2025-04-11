@@ -1,6 +1,7 @@
 package com.xmall.product.application.mapper;
 
-import com.xmall.product.application.dto.request.SPURequest;
+import com.xmall.product.application.dto.request.SPUCreateRequest;
+import com.xmall.product.application.dto.request.SPUUpdateRequest;
 import com.xmall.product.application.dto.response.SPUResponse;
 import com.xmall.product.domain.entity.SPUEntity;
 import org.mapstruct.Mapper;
@@ -11,7 +12,7 @@ import org.mapstruct.MappingTarget;
 public interface SPUMapper {
     @Mapping(target = "category.categoryId", source = "categoryId")
     @Mapping(target = "brand.brandId", source = "brandId")
-    SPUEntity toSPUEntity(SPURequest spuRequest);
+    SPUEntity toSPUEntity(SPUCreateRequest spuCreateRequest);
 
     @Mapping(target = "categoryId", source = "category.categoryId")
     @Mapping(target = "categoryName", source = "category.name")
@@ -21,5 +22,5 @@ public interface SPUMapper {
 
     @Mapping(target = "category.categoryId", source = "categoryId")
     @Mapping(target = "brand.brandId", source = "brandId")
-    void updateSPUEntity(@MappingTarget SPUEntity spuEntity, SPURequest spuRequest);
+    void updateSPUEntity(@MappingTarget SPUEntity spuEntity, SPUUpdateRequest spuUpdateRequest);
 } 

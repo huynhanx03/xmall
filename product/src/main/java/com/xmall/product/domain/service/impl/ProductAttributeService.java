@@ -2,7 +2,8 @@ package com.xmall.product.domain.service.impl;
 
 import com.xmall.common.shared.exception.AppException;
 import com.xmall.common.shared.exception.ErrorCode;
-import com.xmall.product.application.dto.request.ProductAttributeRequest;
+import com.xmall.product.application.dto.request.ProductAttributeCreateRequest;
+import com.xmall.product.application.dto.request.ProductAttributeUpdateRequest;
 import com.xmall.product.application.dto.response.ProductAttributeResponse;
 import com.xmall.product.application.mapper.ProductAttributeMapper;
 import com.xmall.product.domain.entity.ProductAttributeEntity;
@@ -40,14 +41,14 @@ public class ProductAttributeService implements IProductAttributeService {
     }
 
     @Override
-    public ProductAttributeResponse createProductAttribute(ProductAttributeRequest productAttributeRequest) {
-        if (productAttributeRepository.existsByNameAndType(productAttributeRequest.getName(), productAttributeRequest.getType())) {
+    public ProductAttributeResponse createProductAttribute(ProductAttributeCreateRequest request) {
+        if (productAttributeRepository.existsByName(request.getName())) {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
-            errorCode.setMessage("Product attribute with name '" + productAttributeRequest.getName() + "' and type '" + productAttributeRequest.getType() + "' already exists.");
+            errorCode.setMessage("Product attribute with name '" + request.getName() + "' already exists.");
             throw new AppException(errorCode);
         }
 
-        ProductAttributeEntity productAttributeEntity = productAttributeMapper.toProductAttributeEntity(productAttributeRequest);
+        ProductAttributeEntity productAttributeEntity = productAttributeMapper.toProductAttributeEntity(request);
 
         try {
             productAttributeEntity = productAttributeRepository.save(productAttributeEntity);
@@ -61,24 +62,24 @@ public class ProductAttributeService implements IProductAttributeService {
     }
 
     @Override
-    public ProductAttributeResponse updateProductAttribute(Long id, ProductAttributeRequest productAttributeRequest) {
+    public ProductAttributeResponse updateProductAttribute(Long id, ProductAttributeUpdateRequest request) {
         ProductAttributeEntity productAttributeEntity = productAttributeRepository.findById(id).orElseThrow(() -> {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
             errorCode.setMessage("Product attribute not found.");
             return new AppException(errorCode);
         });
 
-        if (productAttributeEntity.getType().equals(productAttributeRequest.getType()) && productAttributeEntity.getName().equals(productAttributeRequest.getName())) {
+        if (productAttributeEntity.getName().equals(request.getName())) {
             return productAttributeMapper.toProductAttributeResponse(productAttributeRepository.save(productAttributeEntity));
         }
 
-        if (productAttributeRepository.existsByNameAndType(productAttributeRequest.getName(), productAttributeRequest.getType())) {
+        if (productAttributeRepository.existsByName(request.getName())) {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
-            errorCode.setMessage("Product attribute with name '" + productAttributeRequest.getName() + "' and type '" + productAttributeRequest.getType() + "' already exists.");
+            errorCode.setMessage("Product attribute with name '" + request.getName() + "' already exists.");
             throw new AppException(errorCode);
         }
 
-        productAttributeMapper.updateProductAttributeEntity(productAttributeEntity, productAttributeRequest);
+        productAttributeMapper.updateProductAttributeEntity(productAttributeEntity, request);
 
         try {
             productAttributeEntity = productAttributeRepository.save(productAttributeEntity);

@@ -2,7 +2,8 @@ package com.xmall.product.domain.service.impl;
 
 import com.xmall.common.shared.exception.AppException;
 import com.xmall.common.shared.exception.ErrorCode;
-import com.xmall.product.application.dto.request.SKUImageRequest;
+import com.xmall.product.application.dto.request.SKUImageCreateRequest;
+import com.xmall.product.application.dto.request.SKUImageUpdateRequest;
 import com.xmall.product.application.dto.response.SKUImageResponse;
 import com.xmall.product.application.mapper.SKUImageMapper;
 import com.xmall.product.domain.entity.SKUEntity;
@@ -14,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,9 +24,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SKUImageService implements ISKUImageService {
-    JpaSKUImageRepository skuImageRepository;
-    JpaSKURepository skuRepository;
-    SKUImageMapper skuImageMapper;
+
+    private final JpaSKUImageRepository skuImageRepository;
+    private final JpaSKURepository skuRepository;
+    private final SKUImageMapper skuImageMapper;
 
     @Override
     public List<SKUImageResponse> getSKUImages() {
@@ -43,15 +46,15 @@ public class SKUImageService implements ISKUImageService {
     }
 
     @Override
-    public SKUImageResponse createSKUImage(SKUImageRequest skuImageRequest) {
-        SKUEntity sku = skuRepository.findById(skuImageRequest.getSkuId())
+    public SKUImageResponse createSKUImage(SKUImageCreateRequest request) {
+        SKUEntity sku = skuRepository.findById(request.getSkuId())
                 .orElseThrow(() -> {
                     ErrorCode errorCode = ErrorCode.NOT_EXISTED;
                     errorCode.setMessage("SKU not found.");
                     return new AppException(errorCode);
                 });
 
-        SKUImageEntity skuImageEntity = skuImageMapper.toSKUImageEntity(skuImageRequest);
+        SKUImageEntity skuImageEntity = skuImageMapper.toSKUImageEntity(request);
         skuImageEntity.setSku(sku);
 
         try {
@@ -66,21 +69,22 @@ public class SKUImageService implements ISKUImageService {
     }
 
     @Override
-    public SKUImageResponse updateSKUImage(Long id, SKUImageRequest skuImageRequest) {
+    @Transactional
+    public SKUImageResponse updateSKUImage(Long id, SKUImageUpdateRequest request) {
         SKUImageEntity skuImageEntity = skuImageRepository.findById(id).orElseThrow(() -> {
             ErrorCode errorCode = ErrorCode.NOT_EXISTED;
             errorCode.setMessage("SKU image not found.");
             return new AppException(errorCode);
         });
 
-        SKUEntity sku = skuRepository.findById(skuImageRequest.getSkuId())
+        SKUEntity sku = skuRepository.findById(request.getSkuId())
                 .orElseThrow(() -> {
                     ErrorCode errorCode = ErrorCode.NOT_EXISTED;
                     errorCode.setMessage("SKU not found.");
                     return new AppException(errorCode);
                 });
 
-        skuImageMapper.updateSKUImageEntity(skuImageEntity, skuImageRequest);
+        skuImageEntity.setImageUrl(request.getImageUrl());
         skuImageEntity.setSku(sku);
 
         try {

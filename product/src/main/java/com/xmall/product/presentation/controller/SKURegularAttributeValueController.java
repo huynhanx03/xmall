@@ -1,14 +1,14 @@
 package com.xmall.product.presentation.controller;
 
-import com.xmall.product.application.dto.request.SKURegularAttributeValueRequest;
+import com.xmall.common.application.dto.response.ApiResponse;
+import com.xmall.product.application.dto.request.SKURegularAttributeValueCreateRequest;
+import com.xmall.product.application.dto.request.SKURegularAttributeValueUpdateRequest;
 import com.xmall.product.application.dto.response.SKURegularAttributeValueResponse;
 import com.xmall.product.domain.service.ISKURegularAttributeValueService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,44 +21,57 @@ public class SKURegularAttributeValueController {
     ISKURegularAttributeValueService skuRegularAttributeValueService;
 
     @GetMapping
-    public ResponseEntity<List<SKURegularAttributeValueResponse>> getSKURegularAttributeValues() {
-        return ResponseEntity.ok(skuRegularAttributeValueService.getSKURegularAttributeValues());
+    ApiResponse<List<SKURegularAttributeValueResponse>> getSKURegularAttributeValues() {
+        return ApiResponse.<List<SKURegularAttributeValueResponse>>builder()
+                .data(skuRegularAttributeValueService.getSKURegularAttributeValues())
+                .build();
     }
 
     @GetMapping("/{skuId}/{attributeId}")
-    public ResponseEntity<SKURegularAttributeValueResponse> getSKURegularAttributeValue(
+    ApiResponse<SKURegularAttributeValueResponse> getSKURegularAttributeValue(
             @PathVariable Long skuId, @PathVariable Long attributeId) {
-        return ResponseEntity.ok(skuRegularAttributeValueService.getSKURegularAttributeValue(skuId, attributeId));
+        return ApiResponse.<SKURegularAttributeValueResponse>builder()
+                .data(skuRegularAttributeValueService.getSKURegularAttributeValue(skuId, attributeId))
+                .build();
     }
 
     @PostMapping
-    public ResponseEntity<SKURegularAttributeValueResponse> createSKURegularAttributeValue(
-            @Valid @RequestBody SKURegularAttributeValueRequest request) {
-        return new ResponseEntity<>(skuRegularAttributeValueService.createSKURegularAttributeValue(request), HttpStatus.CREATED);
+    ApiResponse<SKURegularAttributeValueResponse> createSKURegularAttributeValue(
+            @Valid @RequestBody SKURegularAttributeValueCreateRequest request) {
+        return ApiResponse.<SKURegularAttributeValueResponse>builder()
+                .data(skuRegularAttributeValueService.createSKURegularAttributeValue(request))
+                .build();
     }
 
     @PutMapping("/{skuId}/{attributeId}")
-    public ResponseEntity<SKURegularAttributeValueResponse> updateSKURegularAttributeValue(
-            @PathVariable Long skuId, @PathVariable Long attributeId, @Valid @RequestBody SKURegularAttributeValueRequest request) {
-        return ResponseEntity.ok(skuRegularAttributeValueService.updateSKURegularAttributeValue(skuId, attributeId, request));
+    ApiResponse<SKURegularAttributeValueResponse> updateSKURegularAttributeValue(
+            @PathVariable Long skuId, @PathVariable Long attributeId,
+            @Valid @RequestBody SKURegularAttributeValueUpdateRequest request) {
+        return ApiResponse.<SKURegularAttributeValueResponse>builder()
+                .data(skuRegularAttributeValueService.updateSKURegularAttributeValue(skuId, attributeId, request))
+                .build();
     }
 
     @DeleteMapping("/{skuId}/{attributeId}")
-    public ResponseEntity<Void> deleteSKURegularAttributeValue(
+    ApiResponse<Void> deleteSKURegularAttributeValue(
             @PathVariable Long skuId, @PathVariable Long attributeId) {
         skuRegularAttributeValueService.deleteSKURegularAttributeValue(skuId, attributeId);
-        return ResponseEntity.noContent().build();
+        return ApiResponse.<Void>builder().build();
     }
 
     @GetMapping("/sku/{skuId}")
-    public ResponseEntity<List<SKURegularAttributeValueResponse>> getSKURegularAttributeValuesBySKU(
+    ApiResponse<List<SKURegularAttributeValueResponse>> getSKURegularAttributeValuesBySKU(
             @PathVariable Long skuId) {
-        return ResponseEntity.ok(skuRegularAttributeValueService.getSKURegularAttributeValuesBySKU(skuId));
+        return ApiResponse.<List<SKURegularAttributeValueResponse>>builder()
+                .data(skuRegularAttributeValueService.getSKURegularAttributeValuesBySKU(skuId))
+                .build();
     }
 
     @GetMapping("/attribute/{attributeId}")
-    public ResponseEntity<List<SKURegularAttributeValueResponse>> getSKURegularAttributeValuesByAttribute(
+    ApiResponse<List<SKURegularAttributeValueResponse>> getSKURegularAttributeValuesByAttribute(
             @PathVariable Long attributeId) {
-        return ResponseEntity.ok(skuRegularAttributeValueService.getSKURegularAttributeValuesByAttribute(attributeId));
+        return ApiResponse.<List<SKURegularAttributeValueResponse>>builder()
+                .data(skuRegularAttributeValueService.getSKURegularAttributeValuesByAttribute(attributeId))
+                .build();
     }
 } 

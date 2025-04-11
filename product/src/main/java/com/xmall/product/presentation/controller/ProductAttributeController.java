@@ -1,9 +1,10 @@
 package com.xmall.product.presentation.controller;
 
 import com.xmall.common.application.dto.response.ApiResponse;
-import com.xmall.product.application.dto.request.ProductAttributeRequest;
+import com.xmall.product.application.dto.request.ProductAttributeCreateRequest;
+import com.xmall.product.application.dto.request.ProductAttributeUpdateRequest;
 import com.xmall.product.application.dto.response.ProductAttributeResponse;
-import com.xmall.product.domain.service.impl.ProductAttributeService;
+import com.xmall.product.domain.service.IProductAttributeService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequestMapping("/attributes")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ProductAttributeController {
-    ProductAttributeService productAttributeService;
+    IProductAttributeService productAttributeService;
 
     @GetMapping
     ApiResponse<List<ProductAttributeResponse>> getProductAttributes() {
@@ -34,14 +35,14 @@ public class ProductAttributeController {
     }
 
     @PostMapping
-    ApiResponse<ProductAttributeResponse> createProductAttribute(@RequestBody @Valid ProductAttributeRequest request) {
+    ApiResponse<ProductAttributeResponse> createProductAttribute(@RequestBody @Valid ProductAttributeCreateRequest request) {
         return ApiResponse.<ProductAttributeResponse>builder()
                 .data(productAttributeService.createProductAttribute(request))
                 .build();
     }
 
     @PutMapping("/{id}")
-    ApiResponse<ProductAttributeResponse> updateProductAttribute(@PathVariable Long id, @Valid @RequestBody ProductAttributeRequest request) {
+    ApiResponse<ProductAttributeResponse> updateProductAttribute(@PathVariable Long id, @Valid @RequestBody ProductAttributeUpdateRequest request) {
         return ApiResponse.<ProductAttributeResponse>builder()
                 .data(productAttributeService.updateProductAttribute(id, request))
                 .build();

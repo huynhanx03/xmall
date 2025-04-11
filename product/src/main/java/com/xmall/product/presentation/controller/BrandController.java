@@ -1,9 +1,10 @@
 package com.xmall.product.presentation.controller;
 
 import com.xmall.common.application.dto.response.ApiResponse;
-import com.xmall.product.application.dto.request.BrandRequest;
+import com.xmall.product.application.dto.request.BrandCreateRequest;
+import com.xmall.product.application.dto.request.BrandUpdateRequest;
 import com.xmall.product.application.dto.response.BrandResponse;
-import com.xmall.product.domain.service.impl.BrandService;
+import com.xmall.product.domain.service.IBrandService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +18,7 @@ import java.util.List;
 @RequestMapping("/brands")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BrandController {
-    BrandService brandService;
+    IBrandService brandService;
 
     @GetMapping
     ApiResponse<List<BrandResponse>> getBrands() {
@@ -34,14 +35,14 @@ public class BrandController {
     }
 
     @PostMapping
-    ApiResponse<BrandResponse> createBrand(@RequestBody @Valid BrandRequest request) {
+    ApiResponse<BrandResponse> createBrand(@RequestBody @Valid BrandCreateRequest request) {
         return ApiResponse.<BrandResponse>builder()
                 .data(brandService.createBrand(request))
                 .build();
     }
 
     @PutMapping("/{id}")
-    ApiResponse<BrandResponse> updateBrand(@PathVariable Long id, @Valid @RequestBody BrandRequest request) {
+    ApiResponse<BrandResponse> updateBrand(@PathVariable Long id, @Valid @RequestBody BrandUpdateRequest request) {
         return ApiResponse.<BrandResponse>builder()
                 .data(brandService.updateBrand(id, request))
                 .build();
