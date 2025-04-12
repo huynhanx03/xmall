@@ -1,0 +1,17 @@
+app:
+  thread:
+    core-size: 20
+    max-size: 200
+    keep-alive-time: 10
+
+spring:
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000
+      key-prefix: "xmall:"
+      use-key-prefix: true
+      cache-null-values: false
+  redis:
+    host: localhost
+    port: 6379
