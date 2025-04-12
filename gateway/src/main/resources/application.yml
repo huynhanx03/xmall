@@ -1,3 +1,8 @@
 spring:
   application:
     name: gateway-service
+  config:
+    import: configserver:http://localhost:9999
+  cloud:
+    config:
+      fail-fast: true
