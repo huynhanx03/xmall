@@ -3,6 +3,15 @@ DATABASE xmall_user_db;
 USE
 xmall_user_db;
 
+CREATE TABLE user_role
+(
+    role_id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT 'Role ID',
+    role_name        VARCHAR(255) NOT NULL UNIQUE COMMENT 'Role name',
+    role_description TEXT      DEFAULT NULL COMMENT 'Role description',
+    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation time',
+    updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record update time'
+) COMMENT='Table for user roles';
+
 CREATE TABLE user_base
 (
     user_id               BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT 'User ID',
@@ -16,14 +25,12 @@ CREATE TABLE user_base
     role_id               BIGINT UNSIGNED DEFAULT NULL COMMENT 'Role ID',
     created_at            TIMESTAMP   DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation time',
     updated_at            TIMESTAMP   DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record update time',
-    FOREIGN KEY (role_id) REFERENCES role (role_id) ON DELETE SET NULL ON UPDATE CASCADE
+    FOREIGN KEY (role_id) REFERENCES user_role (role_id) ON DELETE SET NULL ON UPDATE CASCADE
 ) COMMENT='Base table for user accounts with roles';
 
 CREATE TABLE user_info
 (
     user_id                BIGINT UNSIGNED PRIMARY KEY COMMENT 'User ID',
-    level_id               BIGINT UNSIGNED       NOT NULL COMMENT 'User level ID indicating membership tier',
-    user_account           VARCHAR(255) NOT NULL COMMENT 'User account',
     user_nickname          VARCHAR(255) DEFAULT NULL COMMENT 'User nickname',
     user_avatar            VARCHAR(255) DEFAULT NULL COMMENT 'User avatar',
     user_state             TINYINT UNSIGNED NOT NULL COMMENT 'User state: 0-Locked, 1-Activated, 2-Not Activated',
@@ -37,19 +44,16 @@ CREATE TABLE user_info
     source_type            INT CHECK (source_type IN (0, 1)) COMMENT 'Registration source (0 - Direct, 1 - Social media)',
     user_integration       INT          DEFAULT 0 COMMENT 'Accumulated integration points for loyalty programs',
     user_growth            INT          DEFAULT 0 COMMENT 'User’s growth points for membership progression',
-    social_uid             VARCHAR(255) COMMENT 'Unique social media identifier if registered via social login',
-    access_token           VARCHAR(255) COMMENT 'Token for social media login sessions',
-    expires_in             BIGINT COMMENT 'Expiration time of social media login token',
     created_at             TIMESTAMP    DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation time',
     updated_at             TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record update time',
-    FOREIGN KEY (user_id) REFERENCES user_base (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (level_id) REFERENCES user_level (level_id) COMMENT 'Foreign key linking to user level table'
+    FOREIGN KEY (user_id) REFERENCES user_base (user_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) COMMENT='User detailed information table';
 
 -- Table storing user level information
 CREATE TABLE user_level
 (
     level_id               BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT 'Unique ID for each user level',
+    user_id                BIGINT UNSIGNED NOT NULL COMMENT 'User ID',
     level_name             VARCHAR(100)                                 NOT NULL COMMENT 'Name of the user level (e.g., Silver, Gold, Platinum)',
     growth_point           INT                                          NOT NULL COMMENT 'Required growth points to achieve this level',
     default_status         INT CHECK (default_status IN (0, 1))         NOT NULL COMMENT 'Indicates if this is the default level (0 - No, 1 - Yes)',
@@ -60,13 +64,14 @@ CREATE TABLE user_level
     privilege_birthday     INT CHECK (privilege_birthday IN (0, 1))     NOT NULL COMMENT 'Indicates if users get birthday rewards (0 - No, 1 - Yes)',
     note                   VARCHAR(255) COMMENT 'Additional remarks about the user level',
     created_at             TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation time',
-    updated_at             TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record update time'
+    updated_at             TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record update time',
+    FOREIGN KEY (user_id) REFERENCES user_base (user_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) COMMENT='Defines different user membership levels and their privileges';
 
 CREATE TABLE user_verify
 (
     verify_id       BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT 'Verification ID',
-    user_id         BIGINT UNSIGNED NOT NULL COMMENT 'User ID', -- Khóa ngoại liên kết tới user_base
+    user_id         BIGINT UNSIGNED NOT NULL COMMENT 'User ID',
     verify_otp      VARCHAR(6)   NOT NULL COMMENT 'Verification OTP',
     verify_key      VARCHAR(255) NOT NULL COMMENT 'Verification key (e.g., email or phone)',
     verify_key_hash VARCHAR(255) NOT NULL COMMENT 'Hashed verification key',
@@ -80,26 +85,15 @@ CREATE TABLE user_verify
 
 CREATE TABLE user_two_factor
 (
-    two_factor_id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT 'Two-factor ID',
-    user_id                BIGINT UNSIGNED NOT NULL COMMENT 'User ID',
-    two_factor_auth_type   ENUM('SMS', 'EMAIL', 'APP') NOT NULL COMMENT 'Type of 2FA: SMS, Email, App',
-    two_factor_auth_secret VARCHAR(255) NOT NULL COMMENT 'Secret for 2FA (e.g., TOTP key)',
-    two_factor_phone       VARCHAR(20)  DEFAULT NULL COMMENT 'Phone number for SMS 2FA',
-    two_factor_email       VARCHAR(255) DEFAULT NULL COMMENT 'Email for email-based 2FA',
-    is_active              TINYINT(1) DEFAULT 1 COMMENT 'Is the 2FA method active?',
-    created_at             TIMESTAMP    DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation time',
-    updated_at             TIMESTAMP    DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record update time',
+    two_factor_id        BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT 'Two-factor ID',
+    user_id              BIGINT UNSIGNED NOT NULL COMMENT 'User ID',
+    two_factor_auth_type ENUM('SMS', 'EMAIL', 'APP') NOT NULL COMMENT 'Type of 2FA: SMS, Email, App',
+    target               VARCHAR(255) NOT NULL COMMENT 'Target for 2FA (e.g., phone number, email address)',
+    is_active            TINYINT(1) DEFAULT 1 COMMENT 'Is the 2FA method active?',
+    created_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation time',
+    updated_at           TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record update time',
     FOREIGN KEY (user_id) REFERENCES user_base (user_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) COMMENT='Two-factor authentication methods for users';
-
-CREATE TABLE user_role
-(
-    role_id          BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY COMMENT 'Role ID',
-    role_name        VARCHAR(255) NOT NULL UNIQUE COMMENT 'Role name',
-    role_description TEXT      DEFAULT NULL COMMENT 'Role description',
-    created_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation time',
-    updated_at       TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record update time'
-) COMMENT='Table for user roles';
 
 -- Table storing user login history
 CREATE TABLE user_login_log
@@ -139,18 +133,10 @@ CREATE TABLE user_statistics_info
     user_statistics_info_id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT COMMENT 'Unique ID for the statistics record',
     user_id                 BIGINT UNSIGNED NOT NULL COMMENT 'User ID associated with these statistics',
     consume_amount          DECIMAL(10, 2) DEFAULT 0 COMMENT 'Total amount spent by the user',
-    coupon_amount           DECIMAL(10, 2) DEFAULT 0 COMMENT 'Total coupon discounts received',
     order_count             INT            DEFAULT 0 COMMENT 'Total number of orders placed',
-    coupon_count            INT            DEFAULT 0 COMMENT 'Total number of coupons owned',
     comment_count           INT            DEFAULT 0 COMMENT 'Total number of product reviews written',
     return_order_count      INT            DEFAULT 0 COMMENT 'Total number of returned orders',
     login_count             INT            DEFAULT 0 COMMENT 'Total number of login attempts',
-    attend_count            INT            DEFAULT 0 COMMENT 'Total number of events attended',
-    fans_count              INT            DEFAULT 0 COMMENT 'Total number of followers',
-    collect_product_count   INT            DEFAULT 0 COMMENT 'Total number of favorite products',
-    collect_subject_count   INT            DEFAULT 0 COMMENT 'Total number of favorite topics',
-    collect_comment_count   INT            DEFAULT 0 COMMENT 'Total number of favorite comments',
-    invite_friend_count     INT            DEFAULT 0 COMMENT 'Total number of friends invited',
     created_at              TIMESTAMP      DEFAULT CURRENT_TIMESTAMP COMMENT 'Record creation time',
     updated_at              TIMESTAMP      DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Record update time',
     FOREIGN KEY (user_id) REFERENCES user_base (user_id) ON DELETE CASCADE ON UPDATE CASCADE
