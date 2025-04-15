@@ -10,6 +10,8 @@ import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSeriali
 import org.springframework.data.redis.serializer.RedisSerializationContext;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import java.time.Duration;
+
 @Configuration
 @EnableCaching
 @EnableConfigurationProperties(CacheProperties.class)
@@ -41,5 +43,13 @@ public class CacheConfig {
         }
 
         return config;
+    }
+
+    @Bean
+    public RedisCacheConfiguration bloomFilterCacheConfiguration() {
+        return RedisCacheConfiguration.defaultCacheConfig()
+                .entryTtl(Duration.ofDays(30)) // Long TTL for Bloom Filter
+                .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+                .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(new GenericJackson2JsonRedisSerializer()));
     }
 }
