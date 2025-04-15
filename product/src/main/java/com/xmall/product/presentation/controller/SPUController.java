@@ -9,6 +9,8 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,9 +23,13 @@ public class SPUController {
     ISPUService spuService;
 
     @GetMapping
-    ApiResponse<List<SPUResponse>> getSPUs() {
+    ApiResponse<List<SPUResponse>> getSPUs(
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "categoryId", required = false) Long categoryId,
+            @RequestParam(value = "brandId", required = false) Long brandId) {
         return ApiResponse.<List<SPUResponse>>builder()
-                .data(spuService.getSPUs())
+                .data(spuService.getSPUs(page, size, categoryId, brandId))
                 .build();
     }
 
@@ -53,18 +59,4 @@ public class SPUController {
         spuService.deleteSPU(id);
         return ApiResponse.<Void>builder().build();
     }
-
-    @GetMapping("/category/{categoryId}")
-    ApiResponse<List<SPUResponse>> getSPUsByCategory(@PathVariable("categoryId") Long categoryId) {
-        return ApiResponse.<List<SPUResponse>>builder()
-                .data(spuService.getSPUsByCategory(categoryId))
-                .build();
-    }
-
-    @GetMapping("/brand/{brandId}")
-    ApiResponse<List<SPUResponse>> getSPUsByBrand(@PathVariable("brandId") Long brandId) {
-        return ApiResponse.<List<SPUResponse>>builder()
-                .data(spuService.getSPUsByBrand(brandId))
-                .build();
-    }
-} 
+}

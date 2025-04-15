@@ -69,8 +69,8 @@ public class ProductAttributeService implements IProductAttributeService {
             return new AppException(errorCode);
         });
 
-        if (productAttributeEntity.getName().equals(request.getName())) {
-            return productAttributeMapper.toProductAttributeResponse(productAttributeRepository.save(productAttributeEntity));
+        if (productAttributeEntity.getName().equals(request.getName()) && productAttributeEntity.getType().equals(request.getType())) {
+            return productAttributeMapper.toProductAttributeResponse(productAttributeEntity);
         }
 
         if (productAttributeRepository.existsByName(request.getName())) {

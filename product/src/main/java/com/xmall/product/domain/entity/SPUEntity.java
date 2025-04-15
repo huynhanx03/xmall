@@ -21,11 +21,11 @@ public class SPUEntity implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long spuId;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "category_id", nullable = false)
     CategoryEntity category;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "brand_id", nullable = false)
     BrandEntity brand;
 

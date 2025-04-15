@@ -14,6 +14,9 @@ import com.xmall.product.infrastructure.persistence.JpaSPURepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,8 +32,26 @@ public class SPUService implements ISPUService {
     SPUMapper spuMapper;
 
     @Override
-    public List<SPUResponse> getSPUs() {
-        return spuRepository.findAll().stream()
+    public List<SPUResponse> getSPUs(int page, int size, Long categoryId, Long brandId) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Specification<SPUEntity> spec = Specification.where(null);
+
+        if (brandId != null) {
+            spec = spec.and((root, query, cb) -> {
+                var brandJoin = root.join("brand");
+                return cb.equal(brandJoin.get("brandId"), brandId);
+            });
+        }
+
+        if (categoryId != null) {
+            spec = spec.and((root, query, cb) -> {
+                var categoryJoin = root.join("category");
+                return cb.equal(categoryJoin.get("categoryId"), categoryId);
+            });
+        }
+
+        return spuRepository.findAll(spec, pageable)
+                .stream()
                 .map(spuMapper::toSPUResponse)
                 .collect(Collectors.toList());
     }
@@ -120,18 +141,4 @@ public class SPUService implements ISPUService {
 
         spuRepository.deleteById(id);
     }
-
-    @Override
-    public List<SPUResponse> getSPUsByCategory(Long categoryId) {
-        return spuRepository.findByCategoryCategoryId(categoryId).stream()
-                .map(spuMapper::toSPUResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<SPUResponse> getSPUsByBrand(Long brandId) {
-        return spuRepository.findByBrandBrandId(brandId).stream()
-                .map(spuMapper::toSPUResponse)
-                .collect(Collectors.toList());
-    }
-} 
+}

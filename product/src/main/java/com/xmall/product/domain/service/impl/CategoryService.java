@@ -70,7 +70,7 @@ public class CategoryService implements ICategoryService {
         });
 
         if (categoryEntity.getName().equals(categoryUpdateRequest.getName())) {
-            return categoryMapper.toCategoryResponse(categoryRepository.save(categoryEntity));
+            return categoryMapper.toCategoryResponse(categoryEntity);
         }
 
         if (categoryRepository.existsByName(categoryUpdateRequest.getName())) {

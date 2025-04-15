@@ -7,11 +7,10 @@ import com.xmall.product.application.dto.response.SPUResponse;
 import java.util.List;
 
 public interface ISPUService {
-    List<SPUResponse> getSPUs();
+    List<SPUResponse> getSPUs(int page, int size, Long categoryId, Long brandId);
+
     SPUResponse getSPUById(Long id);
     SPUResponse createSPU(SPUCreateRequest request);
     SPUResponse updateSPU(Long id, SPUUpdateRequest request);
     void deleteSPU(Long id);
-    List<SPUResponse> getSPUsByCategory(Long categoryId);
-    List<SPUResponse> getSPUsByBrand(Long brandId);
-} 
+}

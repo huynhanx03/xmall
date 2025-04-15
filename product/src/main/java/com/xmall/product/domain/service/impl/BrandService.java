@@ -71,7 +71,7 @@ public class BrandService implements IBrandService {
         });
 
         if (brandEntity.getName().equals(request.getName())) {
-            return brandMapper.toBrandResponse(brandRepository.save(brandEntity));
+            return brandMapper.toBrandResponse(brandEntity);
         }
 
         if (brandRepository.existsByName(request.getName())) {
